@@ -77,7 +77,7 @@ function wait(){const dur=/fast/.test(location.search)?3000:rnd(10,40)*1000,E=ro
  let i=0;const iv=setInterval(()=>{i=Math.min(i+1,m.length-1);const s=$('st');if(s)s.textContent=m[i]},dur/m.length);
  timer=setTimeout(()=>{clearInterval(iv);result()},dur)}
 
-function result(){const E=role=='emp',f=F[D.f],extra=pick(f.s.filter(s=>!D.skills.includes(s))||f.s)||pick(f.s),
+function result(){if(role!='emp')return multi();const E=role=='emp',f=F[D.f],extra=pick(f.s.filter(s=>!D.skills.includes(s))||f.s)||pick(f.s),
  keep=shuf(D.skills).slice(0,D.skills.length>2?D.skills.length-1:D.skills.length),sk=[...keep,extra],
  dist=pick(C[D.city]),pct=Math.floor(rnd(88,98)),r5=n=>Math.round(n/500)*500;
  let name,title,sal,sub,rows;
@@ -89,6 +89,12 @@ function result(){const E=role=='emp',f=F[D.f],extra=pick(f.s.filter(s=>!D.skill
 ${rows.map(r=>`<div class="row"><span>${r[0]}</span><b>${esc(r[1])}</b></div>`).join('')}</div>
 <div id="sch"></div><button class="btn" id="sb">Schedule an interview</button><button class="btn alt" onclick="welcome()">Start over</button>`);
  $('sb').onclick=()=>{$('sch').innerHTML=`<div class="card fade"><b>📅 Smart Schedule</b><p style="color:var(--tx);font-size:19px">Interview set for <b>${pick(['Sunday','Monday','Tuesday','Wednesday','Thursday'])}, ${pick(['10:00 AM','11:30 AM','1:00 PM','2:30 PM'])}</b></p><p>Both sides were notified.</p></div>`;$('sb').style.display='none'}}
+function multi(){const f=F[D.f],r5=x=>Math.round(x/500)*500,names=shuf(N).slice(0,Math.floor(rnd(4,8)));
+ const L=names.map(nm=>{const ex=shuf(f.s.filter(s=>!D.skills.includes(s))).slice(0,1),keep=shuf(D.skills).slice(0,Math.max(1,D.skills.length-(Math.random()<.4?1:0)));
+  return{nm,sk:[...keep,...ex],pct:Math.floor(rnd(72,98)),t:pick(f.t),sal:r5(D.sal*rnd(.82,1.02)),d:pick(C[D.city]),xp:pick(['Fresh graduate','1 year of experience','2 years of experience','3 years of experience'])}}).sort((a,b)=>b.pct-a.pct);
+ const card=(c,i)=>`<div class="card"><div style="display:flex;gap:14px;align-items:center"><div class="av">${c.nm[0]}</div><div style="flex:1"><b style="font-size:20px">${c.nm}</b><br><span style="color:var(--mut)">${c.t}</span></div><div class="pct g" style="font-size:34px">${c.pct}%</div></div><div style="margin:12px 0 4px">${c.sk.map(s=>`<span class="chip${D.skills.includes(s)?' on':''}">${s}</span>`).join('')}</div><div class="row"><span>Location</span><b>${c.d}, ${esc(D.city)}</b></div><div class="row"><span>Expected salary</span><b>${fmt(c.sal)}</b></div><div class="row"><span>Experience</span><b>${c.xp}</b></div><button class="btn alt iv" style="margin-top:6px;padding:12px;font-size:16px">Schedule interview</button></div>`;
+ R(`<div class="lk">LINK!</div><h2 style="text-align:center">${L.length} people applied</h2><p style="text-align:center">for ${esc(D.title)} at ${esc(D.name)}</p>`+L.map(card).join('')+`<button class="btn alt" onclick="welcome()">Start over</button>`);
+ A.querySelectorAll('.iv').forEach(b=>b.onclick=()=>{b.outerHTML='<p class="fade" style="color:var(--tx)">📅 <b>'+pick(['Sunday','Monday','Tuesday','Wednesday','Thursday'])+', '+pick(['10:00 AM','11:30 AM','1:00 PM','2:30 PM'])+'</b> · interview scheduled</p>'})}
 welcome();
 </script>
 </body>
