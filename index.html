@@ -95,11 +95,11 @@ function noLink(low,lo,hi){const E=role=='emp';
  R(`<div style="text-align:center;font-size:64px;margin-top:30px">🤔</div><h2 style="text-align:center">No link this time</h2><p style="text-align:center">${E?(low?'That expected salary is far below the market for this field, so no company would offer it.':'That expected salary is much higher than what companies pay in this field, so no company can match it.'):(low?'That offer is far below the market, so candidates for this job won’t apply.':'That offer is far above the market, so it looks unrealistic and nobody gets linked.')}</p><p style="text-align:center">Typical range for ${esc(D.f)}: <b>${fmt(lo)} – ${fmt(hi)}</b></p><button class="btn" id="rt">Try again</button>`);$('rt').onclick=()=>showForm(role)}
 function gen(){const E=role=='emp',f=F[D.f],[lo,hi]=B[D.f],s=D.sal;
  if(s<lo*.7||s>hi*1.2){noLink(s<lo*.7,lo,hi);return false}
- const names=E?[...shuf(f.c),...shuf(G)]:shuf(N),pool=Math.min(names.length,4+D.skills.length*2),v=()=>r5(lo+(hi-lo)*(Math.random()+Math.random()+Math.random())/3),
+ const names=E?[...shuf(f.c),...shuf(G)]:shuf(N),mid=(lo+hi)/2,cl=Math.max(0,1-Math.abs(s-mid)/((hi-lo)/2)),
+ n=Math.max(3,Math.min(7,names.length,3+Math.round(cl*2+rnd(0,2)+(D.skills.length>3?1:0)))),
  ex=()=>{const o=f.s.filter(x=>!D.skills.includes(x));return pick(o.length?o:f.s)};
- let m=names.slice(0,pool).map(nm=>({nm,v:v()})).filter(c=>E?(c.v>=s*.92&&c.v<=s*1.3):(c.v>=s*.75&&c.v<=s*1.05));
- if(!m.length)m=[{nm:names[0],v:r5(E?s*rnd(.97,1.1):s*rnd(.8,.98))}];
- L=m.slice(0,6).map(c=>{const keep=shuf(D.skills).slice(0,D.skills.length>2&&Math.random()<.5?D.skills.length-1:D.skills.length),loc=pick(C[D.city])+', '+D.city,ts=f.t.filter(t=>t!=D.title),
+ const m=names.slice(0,n).map(nm=>({nm,v:r5(E?s*rnd(.95,1.25):s*rnd(.78,1))}));
+ L=m.map(c=>{const keep=shuf(D.skills).slice(0,D.skills.length>2&&Math.random()<.5?D.skills.length-1:D.skills.length),loc=pick(C[D.city])+', '+D.city,ts=f.t.filter(t=>t!=D.title),
   pct=Math.max(72,Math.min(98,Math.round(98-Math.abs(c.v-s)/s*45-rnd(0,6))));
   return{nm:c.nm,sub:pick(ts.length?ts:f.t),sk:[...new Set([...keep,ex()])],pct,rows:E?[['Location',loc],['Salary offer',fmt(c.v)],['Status','Hiring now']]:[['Location',loc],['Expected salary',fmt(c.v)],['Experience',pick(['Fresh graduate','1 year of experience','2 years of experience','3 years of experience'])]]}}).sort((a,b)=>b.pct-a.pct);return true}
 
